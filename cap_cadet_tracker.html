@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Civil Air Patrol Personal Cadet Tracker</title>
+    <style>
+        :root {
+            --cap-navy: #002b66;
+            --cap-blue: #00529b;
+            --cap-red: #d92626;
+            --bg-color: #ffffff;
+            --card-bg: #ffffff;
+            --border-color: #d1d5db;
+            --border-light: #e5e7eb;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --input-bg: #ffffff;
+            --success-green: #15803d;
+            --success-bg: #f0fdf4;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.4;
+            padding: 24px;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* Header Layout */
+        header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+
+        .logo-container {
+            width: 52px;
+            height: 52px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            padding: 6px;
+            flex-shrink: 0;
+        }
+
+        .logo-container svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .header-titles h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.2px;
+        }
+
+        .header-titles p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Global Controls Bar */
+        .controls-bar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 7px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+        }
+
+        .btn:hover {
+            background-color: #f9fafb;
+            border-color: #9ca3af;
+        }
+
+        .btn-primary {
+            background-color: var(--cap-navy);
+            color: #ffffff;
+            border-color: var(--cap-navy);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--cap-blue);
+            border-color: var(--cap-blue);
+        }
+
+        .btn-success {
+            background-color: #16a34a;
+            color: #ffffff;
+            border-color: #16a34a;
+        }
+
+        .btn-success:hover {
+            background-color: #15803d;
+            border-color: #15803d;
+        }
+
+        /* Two Column Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 24px;
+        }
+
+        @media (max-width: 960px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Section Cards */
+        .card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--card-bg);
+            padding: 20px;
+        }
+
+        .card-header {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Inputs & Form Styling */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="time"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 8px 12px;
+            font-size: 13px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: var(--input-bg);
+            color: var(--text-main);
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--cap-blue);
+            box-shadow: 0 0 0 2px rgba(0, 82, 155, 0.1);
+        }
+
+        /* Rank Management Header Box */
+        .rank-banner {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            background: #f9fafb;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .rank-controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .rank-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tig-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--success-bg);
+            color: var(--success-green);
+            border: 1px solid #bbf7d0;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .tig-badge.locked {
+            background: #fffbe6;
+            color: #b45309;
+            border-color: #fef08a;
+        }
+
+        /* Check-off Gates Checklist */
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            background: #ffffff;
+        }
+
+        .check-item:hover {
+            border-color: var(--border-color);
+        }
+
+        .check-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .check-left input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: var(--cap-navy);
+        }
+
+        .check-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .check-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .status-pill {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: #f3f4f6;
+            color: var(--text-muted);
+        }
+
+        .status-pill.done {
+            background: var(--success-bg);
+            color: var(--success-green);
+        }
+
+        /* Administrative Log & Signature */
+        .signature-area {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: #ffffff;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 120px;
+            cursor: crosshair;
+        }
+
+        .signature-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        /* Right Column Lists */
+        .rank-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 480px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .rank-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-light);
+            font-size: 12px;
+        }
+
+        .rank-row.active {
+            border-color: var(--cap-navy);
+            background-color: #eff6ff;
+            font-weight: 700;
+        }
+
+        .rank-row.completed {
+            background-color: #f9fafb;
+            color: var(--text-muted);
+        }
+
+        .points-box {
+            font-size: 12px;
+            line-height: 1.6;
+            color: var(--text-muted);
+        }
+
+        .points-box strong {
+            color: var(--text-main);
+        }
+
+        @media print {
+            .controls-bar, .signature-actions button {
+                display: none !important;
+            }
+            body {
+                padding: 0;
+            }
+            .card {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header>
+        <div class="logo-container" title="Civil Air Patrol">
+            <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#002B66" d="M200,215 L128,70 L88,75 L110,125 L160,120 L200,215 Z"/>
+                <path fill="#002B66" d="M200,215 L272,70 L312,75 L290,125 L240,120 L200,215 Z"/>
+                <path fill="#002B66" d="M120,70 L280,70 L200,215 Z"/>
+                <polygon fill="#FFFFFF" points="200,115 180,145 220,145"/>
+                <rect x="120" y="90" width="160" height="8" fill="#002B66"/>
+                <rect x="115" y="106" width="170" height="7" fill="#002B66"/>
+            </svg>
+        </div>
+        <div class="header-titles">
+            <h1>Civil Air Patrol Personal Cadet Tracker</h1>
+            <p>Personal rank progress, time-in-grade tracker, check-off gates, and fitness log.</p>
+        </div>
+    </header>
+
+    <!-- Global Controls -->
+    <div class="controls-bar">
+        <button class="btn" onclick="exportData()">Export Data</button>
+        <button class="btn" onclick="document.getElementById('importInput').click()">Import Data</button>
+        <input type="file" id="importInput" style="display:none;" accept=".json" onchange="importData(event)">
+        <button class="btn btn-primary" onclick="window.print()">Print Record</button>
+    </div>
+
+    <!-- Main Grid Layout -->
+    <div class="main-layout">
+        
+        <!-- Left Column: Primary Working Cards -->
+        <div class="left-column">
+            
+            <!-- Cadet Profile & Rank Selector -->
+            <div class="card">
+                <div class="card-header">
+                    <span>Cadet Profile</span>
+                </div>
+                
+                <div class="form-grid" style="margin-bottom: 16px;">
+                    <div class="form-group">
+                        <label>Cadet Name</label>
+                        <input type="text" id="cadetName" placeholder="Last, First" oninput="saveData()">
+                    </div>
+                    <div class="form-group">
+                        <label>CAP ID</label>
+                        <input type="text" id="capId" placeholder="6-digit CAPID" oninput="saveData()">
+                    </div>
+                    <div class="form-group">
+                        <label>Squadron / Charter</label>
+                        <input type="text" id="squadron" placeholder="e.g. SER-FL-001" oninput="saveData()">
+                    </div>
+                </div>
+
+                <!-- Rank Selection & TIG Box -->
+                <div class="rank-banner">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Current Rank</label>
+                            <select id="rankSelect" onchange="changeRank(this.value)">
+                                <!-- Filled by JS -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date Promoted to Current Rank</label>
+                            <input type="date" id="datePromoted" onchange="updateTIG()">
+                        </div>
+                    </div>
+
+                    <div class="rank-controls">
+                        <div id="tigBadge" class="tig-badge">
+                            <span>Time in Grade: 0 days</span>
+                        </div>
+                        <div class="rank-buttons">
+                            <button class="btn" onclick="stepRank(-1)">‹ Rank Down</button>
+                            <button class="btn btn-success" onclick="stepRank(1)">✓ Rank Up</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Achievement Gates Checklist -->
+            <div class="card">
+                <div class="card-header">
+                    <span id="checklistTitle">Active Achievement Gates</span>
+                    <span id="completionPercent" class="status-pill">0% Done</span>
+                </div>
+                <div id="checklistItems" class="checklist">
+                    <!-- Checkbox items inserted via JS -->
+                </div>
+            </div>
+
+            <!-- CPFT Physical Fitness Log -->
+            <div class="card">
+                <div class="card-header">
+                    <span>Physical Fitness (CPFT / HFZ Log)</span>
+                    <span id="fitnessStatusPill" class="status-pill">Pending</span>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Mile Run / PACER</label>
+                        <input type="text" id="fitMile" placeholder="e.g. 8:15" oninput="saveData()">
+                    </div>
+                    <div class="form-group">
+                        <label>Push-Ups (Reps)</label>
+                        <input type="number" id="fitPushups" placeholder="0" oninput="saveData()">
+                    </div>
+                    <div class="form-group">
+                        <label>Curl-Ups (Reps)</label>
+                        <input type="number" id="fitCurlups" placeholder="0" oninput="saveData()">
+                    </div>
+                    <div class="form-group">
+                        <label>Sit & Reach (Inches)</label>
+                        <input type="number" step="0.5" id="fitSitReach" placeholder="0" oninput="saveData()">
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Last Passed CPFT Date</label>
+                        <input type="date" id="fitDate" onchange="saveData()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Administrative Log & Clearance Pad -->
+            <div class="card">
+                <div class="card-header">
+                    <span>Administrative Log</span>
+                </div>
+                <div class="form-grid" style="margin-bottom: 12px;">
+                    <div class="form-group">
+                        <label>Date (auto)</label>
+                        <input type="date" id="adminDate" onchange="saveData()">
+                    </div>
+                    <div class="form-group">
+                        <label>Time Called to Order</label>
+                        <input type="time" id="adminTime" onchange="saveData()">
+                    </div>
+                    <div class="form-group">
+                        <label>Tracking Cadet Name</label>
+                        <input type="text" id="adminCadetName" placeholder="Last, First" oninput="saveData()">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Digital Signature Clearance</label>
+                    <div class="signature-area">
+                        <canvas id="sigCanvas"></canvas>
+                    </div>
+                    <div class="signature-actions">
+                        <button class="btn" onclick="clearSignature()">Clear</button>
+                        <span style="font-size: 11px; color: var(--text-muted);" id="sigStatus">Sign inside box above</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Column: Roster & Reference Cards -->
+        <div class="right-column">
+            
+            <!-- Rank Hierarchy / Progression -->
+            <div class="card">
+                <div class="card-header">
+                    <span>Cadet Rank Hierarchy</span>
+                </div>
+                <div id="rankHierarchyList" class="rank-list">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Activity & Points Scale Reference -->
+            <div class="card">
+                <div class="card-header">
+                    <span>Personal Activity Scale</span>
+                </div>
+                <div class="points-box">
+                    <p><strong>Regular Meetings:</strong> 5 pts / meeting</p>
+                    <p><strong>Orientation Flights:</strong> 15 pts / flight</p>
+                    <p><strong>Encampment / NCSA:</strong> 50 pts / event</p>
+                    <p><strong>Color Guard / Service:</strong> 10 pts / event</p>
+                    <p><strong>CPFT Passed:</strong> 10 pts / test</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Application Script -->
+    <script>
+        // Civil Air Patrol Cadet Rank Curriculum Definition
+        const RANKS = [
+            { id: 'C/AB', name: 'Cadet Airman Basic', achievement: 'Join CAP', minDays: 0, gates: ['Cadet Orientation Course', 'Curry Chapter Study'] },
+            { id: 'C/Amn', name: 'Cadet Airman', achievement: 'Ach. 1 - Maj Gen John F. Curry', minDays: 56, gates: ['Leadership Test (Ch 1)', 'CPFT Fitness Pass', 'Drill Performance Test', 'Character Forum'] },
+            { id: 'C/A1C', name: 'Cadet Airman First Class', achievement: 'Ach. 2 - Gen Hap Arnold', minDays: 56, gates: ['Leadership Test (Ch 2)', 'Aerospace Module 1', 'CPFT Fitness Pass', 'Character Forum', 'Uniform Wear Gate'] },
+            { id: 'C/SrA', name: 'Cadet Senior Airman', achievement: 'Ach. 3 - Mary Feik', minDays: 56, gates: ['Leadership Test (Ch 3)', 'Aerospace Module 2', 'CPFT Fitness Pass', 'Character Forum'] },
+            { id: 'C/SSgt', name: 'Cadet Staff Sergeant', achievement: 'Wright Brothers Award', minDays: 56, gates: ['Wright Brothers Comprehensive Exam', 'Comprehensive Drill Test', 'CPFT Fitness Pass', 'Staff Readiness Review'] },
+            { id: 'C/TSgt', name: 'Cadet Technical Sergeant', achievement: 'Ach. 4 - Capt Eddie Rickenbacker', minDays: 56, gates: ['Leadership Test (Ch 4)', 'Aerospace Module 3', 'CPFT Fitness Pass', 'Character Forum'] },
+            { id: 'C/MSgt', name: 'Cadet Master Sergeant', achievement: 'Ach. 5 - Gen Jimmy Doolittle', minDays: 56, gates: ['Leadership Test (Ch 5)', 'Aerospace Module 4', 'CPFT Fitness Pass', 'Character Forum'] },
+            { id: 'C/SMSgt', name: 'Cadet Senior Master Sergeant', achievement: 'Ach. 6 - Dr. Robert H. Goddard', minDays: 56, gates: ['Leadership Test (Ch 6)', 'Aerospace Module 5', 'CPFT Fitness Pass', 'Character Forum'] },
+            { id: 'C/CMSgt', name: 'Cadet Chief Master Sergeant', achievement: 'Ach. 7 - Neil Armstrong', minDays: 56, gates: ['Leadership Test (Ch 7)', 'Aerospace Module 6', 'CPFT Fitness Pass', 'Character Forum', 'Speech & Essay Requirement'] },
+            { id: 'C/2Lt', name: 'Cadet Second Lieutenant', achievement: 'Billy Mitchell Award', minDays: 56, gates: ['Mitchell Leadership Exam', 'Mitchell Aerospace Exam', 'Encampment Graduation', 'CPFT Fitness Pass'] },
+            { id: 'C/1Lt', name: 'Cadet First Lieutenant', achievement: 'Ach. 9 - Flight Commander', minDays: 56, gates: ['Leadership Staff Test', 'Aerospace Module 7', 'CPFT Fitness Pass', 'Oral Presentation'] },
+            { id: 'C/Capt', name: 'Cadet Captain', achievement: 'Amelia Earhart Award', minDays: 56, gates: ['Earhart Leadership Exam', 'CPFT Fitness Pass', 'Staff Evaluation'] },
+            { id: 'C/Maj', name: 'Cadet Major', achievement: 'Ach. 11 - Executive Staff', minDays: 56, gates: ['Executive Staff Project', 'CPFT Fitness Pass', 'Technical Essay'] },
+            { id: 'C/LtCol', name: 'Cadet Lieutenant Colonel', achievement: 'Ach. 12 - Cadet Commander', minDays: 56, gates: ['Commander Staff Review', 'CPFT Fitness Pass'] },
+            { id: 'C/Col', name: 'Cadet Colonel', achievement: 'Gen Carl A. Spaatz Award', minDays: 56, gates: ['Spaatz Leadership Exam', 'Spaatz Aerospace Exam', 'Spaatz CPFT Pass', 'Spaatz Written Essay'] }
+        ];
+
+        // State object
+        let state = {
+            cadetName: '',
+            capId: '',
+            squadron: '',
+            currentRankIndex: 2, // Default C/A1C
+            datePromoted: new Date().toISOString().split('T')[0],
+            gates: {}, // key: rankId_gateIndex -> boolean
+            fitness: { mile: '', pushups: '', curlups: '', sitreach: '', date: '' },
+            adminDate: '2026-10-27',
+            adminTime: '19:00',
+            adminCadetName: '',
+            sigData: null
+        };
+
+        let canvas, ctx, isDrawing = false;
+
+        window.onload = function() {
+            initRankDropdown();
+            initCanvas();
+            loadData();
+            render();
+        };
+
+        function initRankDropdown() {
+            const select = document.getElementById('rankSelect');
+            select.innerHTML = '';
+            RANKS.forEach((r, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx;
+                opt.textContent = `${r.id} - ${r.name}`;
+                select.appendChild(opt);
+            });
+        }
+
+        function initCanvas() {
+            canvas = document.getElementById('sigCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // Adjust canvas size to fit container
+            canvas.width = canvas.parentElement.clientWidth || 400;
+            canvas.height = 120;
+
+            ctx.strokeStyle = '#002b66';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+
+            function getPos(e) {
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return {
+                    x: clientX - rect.left,
+                    y: clientY - rect.top
+                };
+            }
+
+            function startDraw(e) {
+                isDrawing = true;
+                const pos = getPos(e);
+                ctx.beginPath();
+                ctx.moveTo(pos.x, pos.y);
+            }
+
+            function moveDraw(e) {
+                if (!isDrawing) return;
+                const pos = getPos(e);
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+                e.preventDefault();
+            }
+
+            function stopDraw() {
+                if (isDrawing) {
+                    isDrawing = false;
+                    state.sigData = canvas.toDataURL();
+                    saveData();
+                }
+            }
+
+            canvas.addEventListener('mousedown', startDraw);
+            canvas.addEventListener('mousemove', moveDraw);
+            window.addEventListener('mouseup', stopDraw);
+
+            canvas.addEventListener('touchstart', startDraw);
+            canvas.addEventListener('touchmove', moveDraw);
+            canvas.addEventListener('touchend', stopDraw);
+        }
+
+        function clearSignature() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            state.sigData = null;
+            saveData();
+        }
+
+        function changeRank(index) {
+            state.currentRankIndex = parseInt(index);
+            saveData();
+            render();
+        }
+
+        function stepRank(delta) {
+            let nextIndex = state.currentRankIndex + delta;
+            if (nextIndex >= 0 && nextIndex < RANKS.length) {
+                state.currentRankIndex = nextIndex;
+                document.getElementById('rankSelect').value = nextIndex;
+                saveData();
+                render();
+            }
+        }
+
+        function updateTIG() {
+            state.datePromoted = document.getElementById('datePromoted').value;
+            saveData();
+            renderTIG();
+        }
+
+        function renderTIG() {
+            const promoDate = new Date(state.datePromoted);
+            const today = new Date();
+            const diffTime = Math.max(0, today - promoDate);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+            const activeRank = RANKS[state.currentRankIndex];
+            const badge = document.getElementById('tigBadge');
+            
+            if (diffDays >= activeRank.minDays || activeRank.minDays === 0) {
+                badge.className = 'tig-badge';
+                badge.innerHTML = `✓ Time in Grade: ${diffDays} days (Eligible for Promotion)`;
+            } else {
+                badge.className = 'tig-badge locked';
+                badge.innerHTML = `⏳ Time in Grade: ${diffDays} / ${activeRank.minDays} days (TIG Locked)`;
+            }
+        }
+
+        function toggleGate(rankId, gateIdx, checked) {
+            state.gates[`${rankId}_${gateIdx}`] = checked;
+            saveData();
+            renderChecklist();
+        }
+
+        function renderChecklist() {
+            const currentRank = RANKS[state.currentRankIndex];
+            document.getElementById('checklistTitle').textContent = `Active Gates - ${currentRank.id} (${currentRank.achievement})`;
+
+            const container = document.getElementById('checklistItems');
+            container.innerHTML = '';
+
+            let completedCount = 0;
+
+            currentRank.gates.forEach((gateName, idx) => {
+                const key = `${currentRank.id}_${idx}`;
+                const isChecked = !!state.gates[key];
+                if (isChecked) completedCount++;
+
+                const item = document.createElement('div');
+                item.className = 'check-item';
+                item.innerHTML = `
+                    <div class="check-left">
+                        <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleGate('${currentRank.id}', ${idx}, this.checked)">
+                        <div>
+                            <div class="check-label">${gateName}</div>
+                            <div class="check-desc">${currentRank.id} Requirement Gate</div>
+                        </div>
+                    </div>
+                    <span class="status-pill ${isChecked ? 'done' : ''}">${isChecked ? 'Completed' : 'Pending'}</span>
+                `;
+                container.appendChild(item);
+            });
+
+            const percent = currentRank.gates.length ? Math.round((completedCount / currentRank.gates.length) * 100) : 100;
+            const percentPill = document.getElementById('completionPercent');
+            percentPill.textContent = `${percent}% Done`;
+            percentPill.className = `status-pill ${percent === 100 ? 'done' : ''}`;
+        }
+
+        function renderRankHierarchy() {
+            const container = document.getElementById('rankHierarchyList');
+            container.innerHTML = '';
+
+            RANKS.forEach((r, idx) => {
+                const row = document.createElement('div');
+                let className = 'rank-row';
+                if (idx === state.currentRankIndex) className += ' active';
+                else if (idx < state.currentRankIndex) className += ' completed';
+                
+                row.className = className;
+                row.innerHTML = `
+                    <span>${r.id} - ${r.name}</span>
+                    <span>${idx < state.currentRankIndex ? '✓' : (idx === state.currentRankIndex ? 'Current' : '')}</span>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function render() {
+            document.getElementById('cadetName').value = state.cadetName || '';
+            document.getElementById('capId').value = state.capId || '';
+            document.getElementById('squadron').value = state.squadron || '';
+            document.getElementById('rankSelect').value = state.currentRankIndex;
+            document.getElementById('datePromoted').value = state.datePromoted;
+
+            document.getElementById('fitMile').value = state.fitness.mile || '';
+            document.getElementById('fitPushups').value = state.fitness.pushups || '';
+            document.getElementById('fitCurlups').value = state.fitness.curlups || '';
+            document.getElementById('fitSitReach').value = state.fitness.sitreach || '';
+            document.getElementById('fitDate').value = state.fitness.date || '';
+
+            document.getElementById('adminDate').value = state.adminDate;
+            document.getElementById('adminTime').value = state.adminTime;
+            document.getElementById('adminCadetName').value = state.adminCadetName || state.cadetName || '';
+
+            renderTIG();
+            renderChecklist();
+            renderRankHierarchy();
+
+            if (state.sigData) {
+                const img = new Image();
+                img.onload = function() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0);
+                };
+                img.src = state.sigData;
+            }
+        }
+
+        function saveData() {
+            state.cadetName = document.getElementById('cadetName').value;
+            state.capId = document.getElementById('capId').value;
+            state.squadron = document.getElementById('squadron').value;
+            state.datePromoted = document.getElementById('datePromoted').value;
+
+            state.fitness = {
+                mile: document.getElementById('fitMile').value,
+                pushups: document.getElementById('fitPushups').value,
+                curlups: document.getElementById('fitCurlups').value,
+                sitreach: document.getElementById('fitSitReach').value,
+                date: document.getElementById('fitDate').value
+            };
+
+            state.adminDate = document.getElementById('adminDate').value;
+            state.adminTime = document.getElementById('adminTime').value;
+            state.adminCadetName = document.getElementById('adminCadetName').value;
+
+            localStorage.setItem('cap_cadet_tracker_data', JSON.stringify(state));
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('cap_cadet_tracker_data');
+            if (saved) {
+                try {
+                    state = Object.assign(state, JSON.parse(saved));
+                } catch(e) {
+                    console.error('Error loading saved state', e);
+                }
+            }
+        }
+
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+            const dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", `CAP_Cadet_Tracker_${state.capId || 'Record'}.json`);
+            dlAnchorElem.click();
+        }
+
+        function importData(event) {
+            const fileReader = new FileReader();
+            fileReader.onload = function( e ) {
+                try {
+                    state = JSON.parse(e.target.result);
+                    saveData();
+                    render();
+                } catch(err) {
+                    alert('Invalid file JSON format.');
+                }
+            };
+            fileReader.readAsText(event.target.files[0]);
+        }
+    </script>
+</body>
+</html>
